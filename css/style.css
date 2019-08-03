@@ -39,7 +39,7 @@ input:hover, input:focus {
 
 /* line 18, ../../01 cl html template/03_jun 2019/182_medico_html/sass/_common.scss */
 .section_padding {
-  padding: 140px 0px;
+  padding: 40px 0px;
 }
 
 @media only screen and (min-width: 992px) and (max-width: 1200px) {
@@ -322,7 +322,7 @@ a:focus, .button:focus, button:focus, .btn:focus {
 .section_tittle p {
   color: #7f7f7f;
   font-weight: 500;
-  text-transform: capitalize;
+  /* text-transform: capitalize; */
   margin-bottom: 26px;
   font-size: 14px;
 }
