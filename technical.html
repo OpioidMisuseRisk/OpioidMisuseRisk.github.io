@@ -186,7 +186,7 @@ features helped achieve this goal:</p>
     To further improve model performance, models were run through a calibrated classifier, which is specifically designed to improve performance of models’ predicted probabilities, and resulting in three additional calibrated versions of the models.</p>
     
 <p>While ordinarily blackbox models such as XGBoost and neural networks have the undesirable tradeoff of sacrificing interpretability for performance, the use of Shapley values to communicate relative 
-    feature importance allows users to determine which features increase or decrease a patient’s risk score, something the team deemed vital for tool usefulness and adoption.</b></p>
+    feature importance allows users to determine which features increase or decrease a patient’s risk score, something the team deemed vital for tool usefulness and adoption.<b></p>
 
 <h4>Model Evaluation</h4>
 <p>Brier Loss Score was the primary evaluation metric used to determine model performance. Though perhaps not as well known as other binary classification methods, it has actually been used since 1950, and for this use case, 
@@ -195,14 +195,14 @@ features helped achieve this goal:</p>
     the goal of this project is to predict the probability of opioid misuse, not to predict the binary outcome of a patient misusing or not misusing opioids.  Therefore, traditional model evaluation techniques such as Precision, 
     Recall, F1 Score, and ROC AUC metrics were not helpful in evaluating desired probability outputs, as they focus on ratios of false positives and false negatives as opposed to measuring probability.<p>
 
-<p>The team also generated calibration curves (a.k.a., reliability diagrams) from the test data for each model, which compare the relative frequency of what was observed to the predicted probability frequency. 
+<p><b>The team also generated calibration curves (a.k.a., reliability diagrams) from the test data for each model, which compare the relative frequency of what was observed to the predicted probability frequency. 
     While the best models are closest to the diagonal line representing a perfectly calibrated model (each probability predicted by the model is exactly correct), since no model is perfect, we preferred models 
     whose bias overestimated risk (the safe zone) rather than underestimated risk (the danger zone).  The diagram below depicts model performance on these calibration curves. </p></br> 
 <img src="img/calibration_curves.png" alt="" class="img-fluid">
 </br>
 
 <p>In all the top performing models (those closest to the diagonal line), even at their worst performance, the predicted probabilities are only roughly seven percentage points away from the actual probabilities, 
-a good practical validation of model performance.</p>
+a good practical validation of model performance.<b></p>
 
 
 <h4> Final Model </h4>
@@ -217,7 +217,7 @@ a good practical validation of model performance.</p>
     For one patient, their previous non-opioid substance abuse may have been the primary feature that brought their risk score up, but for another patient, even if they also have the same history of non-opioid substance abuse, it could be the simple fact of, for example, 
     being young and male that contributed most to their individual risk. Each patient is different, and the tool assesses each individual’s information holistically, rather than statically question by question as previous risk assessment tools have.</p>
 
-<p>It is important to note, however, that this tool does not claim experimental causality between the features and opioid misuse; rather, it is claiming predictive association between the features and opioid misuse.  
+<p><b>It is important to note, however, that this tool does not claim experimental causality between the features and opioid misuse; rather, it is claiming predictive association between the features and opioid misuse.  
     For example, it would be technically incorrect to say that being young and male causes a patient’s risk score to go up, but it is acceptable to say that being young and male is predictive of and/or contributes to a patient’s high risk score.  
     While achieving causal proof of the relationship between features and opioid misuse might be nice, the experiment required to achieve this claim is infeasible for many reasons.  Moreover, there is a long precedent in the medical world to use predictive association,
     as illustrated when a doctor asks if a patient has a family history of some condition. While family history can be predictive of a condition, it doesn’t mean that it’s been causally proven to drive that same condition, 
@@ -233,7 +233,7 @@ a good practical validation of model performance.</p>
       <p class="sample-text">
 <img src="img/production_pipeline.png" alt="" class="img-fluid">
 </br>
-<p>Our multi-step webform was developed using Django, a python web-framework. We pre-process the webform responses and feed them into our trained calibrated XGBoost model and evaluation scripts. 
+<p><b>Our multi-step webform was developed using Django, a python web-framework. We pre-process the webform responses and feed them into our trained calibrated XGBoost model and evaluation scripts. 
     Our scripts output three important pieces of information: the likelihood of the patient to misuse opioids, the corresponding percentile for that likelihood within the general population, and personalized feature importance through use of Shapley values. 
     These three data objects are inputs for our report and data visualizations. Fusion Charts, a JavaScript charting library, are used for this task. Lastly, Bootstrap components render these charts in Django on a Patient Risk Report that a physician can reference when meeting with the patient.</p>
 
