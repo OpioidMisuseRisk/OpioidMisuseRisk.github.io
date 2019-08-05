@@ -176,7 +176,7 @@ features helped achieve this goal:</p>
       <h3 class="text-heading">Model Selection and Evaluation</h3>
       <p class="sample-text">
         <h4>Data Splitting</h4>
-<p><br>We trained our model using 60% of the ~53,000 row dataset. After training the model, 25% of the data was used for calibration and validation, retaining the remaining 15% of the data to test model output.</p></br>
+<p>We trained our model using 60% of the ~53,000 row dataset. After training the model, 25% of the data was used for calibration and validation, retaining the remaining 15% of the data to test model output.</p></br>
 <h4> Model Selection</h4>
 <p>The team tested numerous models of various complexity, starting with a simple logistic regression model to serve as a parsimonious baseline against which other models could be compared. 
     The next model attempted was an Extreme Gradient Boost (XGBoost or XGB) model, an implementation of gradient boosted decision trees known to work particularly well for this kind of relatively 
@@ -186,7 +186,7 @@ features helped achieve this goal:</p>
     To further improve model performance, models were run through a calibrated classifier, which is specifically designed to improve performance of models’ predicted probabilities, and resulting in three additional calibrated versions of the models.</p>
     
 <p>While ordinarily blackbox models such as XGBoost and neural networks have the undesirable tradeoff of sacrificing interpretability for performance, the use of Shapley values to communicate relative 
-    feature importance allows users to determine which features increase or decrease a patient’s risk score, something the team deemed vital for tool usefulness and adoption.</p>
+    feature importance allows users to determine which features increase or decrease a patient’s risk score, something the team deemed vital for tool usefulness and adoption.</b></p>
 
 <h4>Model Evaluation</h4>
 <p>Brier Loss Score was the primary evaluation metric used to determine model performance. Though perhaps not as well known as other binary classification methods, it has actually been used since 1950, and for this use case, 
@@ -198,12 +198,17 @@ features helped achieve this goal:</p>
 <p>The team also generated calibration curves (a.k.a., reliability diagrams) from the test data for each model, which compare the relative frequency of what was observed to the predicted probability frequency. 
     While the best models are closest to the diagonal line representing a perfectly calibrated model (each probability predicted by the model is exactly correct), since no model is perfect, we preferred models 
     whose bias overestimated risk (the safe zone) rather than underestimated risk (the danger zone).  The diagram below depicts model performance on these calibration curves. </p></br> 
+<img src="img/calibration_curves.png" alt="" class="img-fluid">
+</br>
+
 <p>In all the top performing models (those closest to the diagonal line), even at their worst performance, the predicted probabilities are only roughly seven percentage points away from the actual probabilities, 
-a good practical validation of model performance.</p></br>
+a good practical validation of model performance.</p>
+
 
 <h4> Final Model </h4>
 <p>The final model chosen for the OMR Tool is a calibrated XGBoost model. While the calibrated logistic regression model had a slightly lower Brier Loss Score, the team ultimately chose the calibrated XGBoost model because it incorporates feature interaction, 
-    making the personalized feature importance output (Shapley values, see below) far more aligned with existing literature.  An example of the distribution of feature importance of the calibrated Logistic Regression model vs. the calibrated XGBoost model is shown here.</p>
+    making the personalized feature importance output (Shapley values, see below) far more aligned with existing literature.  An example of the distribution of feature importance of the calibrated Logistic Regression model vs. the calibrated XGBoost model is shown here.</b></p>
+<img src="img/model_compare.png" alt="" class="img-fluid"></b>
 
 <h4> Shapley Values </h4>
 <p>It is important for a doctor to know why each patient receives their particular risk score. While this task is a straightforward output for a simple uncalibrated logistic regression model, as model complexity increases, human understanding of the model typically decreases. 
@@ -226,6 +231,8 @@ a good practical validation of model performance.</p></br>
     <div class="container box_1170">
       <h3 class="text-heading">Production Pipeline</h3>
       <p class="sample-text">
+<img src="img/production_pipeline.png" alt="" class="img-fluid">
+</br>
 <p>Our multi-step webform was developed using Django, a python web-framework. We pre-process the webform responses and feed them into our trained calibrated XGBoost model and evaluation scripts. 
     Our scripts output three important pieces of information: the likelihood of the patient to misuse opioids, the corresponding percentile for that likelihood within the general population, and personalized feature importance through use of Shapley values. 
     These three data objects are inputs for our report and data visualizations. Fusion Charts, a JavaScript charting library, are used for this task. Lastly, Bootstrap components render these charts in Django on a Patient Risk Report that a physician can reference when meeting with the patient.</p>
