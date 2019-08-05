@@ -154,18 +154,17 @@ features helped achieve this goal:</p>
 </ol></p><br>
 
 <h4>Potential Look-Ahead Bias</h4>
-<p>Because our outcome variable and certain misuse features for other drugs were specifically about the previous 12 months, the team had to consider the possibility of look-ahead bias; that is,
-  for individuals who misused both opioids and another substance in the previous 12 months, which of the misuses came first? Perhaps misusing opioids caused individuals to misuse other substances,
-  which would mean misuse of the other drug would be an outcome rather than a feature; this would lead to over-predicting risk for individuals who have used these other substances. However, it could
-  also be the other way around, where other substance misuse came first and therefore is a legitimate predictor of opioid misuse; or it could be the underlying predictor of a propensity to misuse opioids
-  (e.g., a patient with an “addictive personality”), regardless of which one came first.  </p></br>
+<p>Because our outcome variable and certain misuse features for other drugs were specifically about the previous 12 months, the team had to consider the possibility of look-ahead bias; that is, for individuals who misused
+  both opioids and another substance in the previous 12 months, which of the misuses came first? Perhaps misusing opioids caused individuals to misuse other substances, which would mean misuse of the other drug would be an
+  outcome rather than a feature; this would lead to over-predicting risk for individuals who have used these other substances. However, it could also be the other way around, where other substance misuse came first and therefore
+  is a legitimate predictor of opioid misuse; or it could be the underlying predictor of a propensity to misuse opioids (e.g., a patient with an “addictive personality”), regardless of which one came first.</p></br>
 
   <p>To deal with this potential bias, when possible, the team selected features that encompassed wider time-frames than the 12 month misuse window. This tactic was not always possible, but the direction
     of the look-ahead bias erred on the side of over-predicting risk, which was the more conservative and therefore more tolerable direction of bias. This was one of the main reasons why the team was okay
     allowing a few features with this potential bias.  If this project advances to the clinical trials stage, the team will prioritize eliminating look-ahead bias in a designed experiment.</p></br>
 
     <p>In conclusion, while there is potentially look-ahead bias, it is by no means definitive, nor is it a detractor of this project’s effectiveness. Given the few features impacted and conservative direction
-       of the potential bias, along with the opportunity to eliminate it in future stages, the team accepted this risk but also felt it was important to acknowledge.</p></br>
+       of the potential bias, along with the opportunity to eliminate it in future stages, the team accepted this risk but also felt it was important to acknowledge.</p>
 
     </div>
     </section>
@@ -175,67 +174,73 @@ features helped achieve this goal:</p>
     <div class="container box_1170">
       <h3 class="text-heading">Model Selection and Evaluation</h3>
       <p class="sample-text">
-        <h4>Data Splitting</h4>
-<p>We trained our model using 60% of the ~53,000 row dataset. After training the model, 25% of the data was used for calibration and validation, retaining the remaining 15% of the data to test model output.</p></br>
-<h4> Model Selection</h4>
-<p>The team tested numerous models of various complexity, starting with a simple logistic regression model to serve as a parsimonious baseline against which other models could be compared. 
-    The next model attempted was an Extreme Gradient Boost (XGBoost or XGB) model, an implementation of gradient boosted decision trees known to work particularly well for this kind of relatively 
-    small sized and dense data.  Finally, a relatively simple neural network was also tested to assess model performance using a completely different family of models.</p>
 
-<p>All three of these initial models are “uncalibrated,” and among them, XGBoost performed considerably better than the other two (see next section, Model Evaluation, for performance criteria).  
-    To further improve model performance, models were run through a calibrated classifier, which is specifically designed to improve performance of models’ predicted probabilities, and resulting in three additional calibrated versions of the models.</p>
-    
-<p>While ordinarily blackbox models such as XGBoost and neural networks have the undesirable tradeoff of sacrificing interpretability for performance, the use of Shapley values to communicate relative 
-    feature importance allows users to determine which features increase or decrease a patient’s risk score, something the team deemed vital for tool usefulness and adoption.</p>
+We trained our model using 60% of the ~53,000 row dataset. After training the model, 25% of the data was used for calibration and validation, retaining the remaining 15% of the data as a test set.</p></br>
+<h4> Model Selection</h4>
+<p>The team experimented with numerous models of various complexity, starting with a simple logistic regression model; this served as a parsimonious baseline against which other models could be compared.
+  The next model attempted was an Extreme Gradient Boost (XGBoost or XGB) model, an implementation of gradient boosted decision trees known to work particularly well for relatively small-sized, dense data.
+  Finally, to experiment with a completely different family of models, the team constructed a simple neural network.</p><br>
+
+<p>All three of these initial models were “uncalibrated”, with XGBoost performing considerably better than the other two (see Model Evaluation subsection below for our evaluation criteria).  To further improve
+  model performance, models were run through a calibrated classifier, which is specifically designed to improve the quality of the models' predicted probabilities. This resulted in three additional calibrated
+  versions of the models.</p><br>
+
+<p>Ordinarily, blackbox models such as XGBoost and neural networks have the undesirable tradeoff of sacrificing interpretability for performance. However, the use of Shapley values (see Shapley Values section below) to communicate personalized
+    feature importance enables physicians to interpret which features increase or decrease a patient’s risk score; something the team deemed vital for tool usefulness and adoption.</p><br>
 
 <h4>Model Evaluation</h4>
-<p><br>Brier Loss Score was the primary evaluation metric used to determine model performance. Though perhaps not as well known as other binary classification methods, it has actually been used since 1950, and for this use case, 
-    was the more appropriate method to use because it is specifically designed to evaluate probability predictions.  For example, in a group of 100 patients, all of whom have a predicted probability of approximately 20%, 
-    Brier Loss Score will indicate the best performance for if 20 of those patients actually misused opioids and 80 did not.  Furthermore, it is important to remember, unlike is often the case of binary classification problems, 
-    the goal of this project is to predict the probability of opioid misuse, not to predict the binary outcome of a patient misusing or not misusing opioids.  Therefore, traditional model evaluation techniques such as Precision, 
-    Recall, F1 Score, and ROC AUC metrics were not helpful in evaluating desired probability outputs, as they focus on ratios of false positives and false negatives as opposed to measuring probability.<p>
+<p>Brier Loss Score was the primary evaluation metric used to assess model performance. Though perhaps not as well known as other evaluation metrics for binary classification, it has actually been used since 1950.
+  Brier Loss Score is a practical method for this use-case because it is specifically designed for probability evaluation.  For example, in a group of 100 patients, all of whom have a predicted probability of approximately
+  20%, Brier Loss Score will indicate the best performance when 20 of those patients actually misused opioids and 80 did not.  It is important to remember, unlike is often the case of binary classification problems, the goal
+  of this project is to predict the probability of opioid misuse, not to predict the binary outcome of a patient misusing or not misusing opioids.  Therefore, traditional model evaluation techniques such as Precision, Recall,
+  F1 Score, and ROC AUC metrics were not helpful in evaluating desired probability outputs, as they focus on ratios of false positives and false negatives as opposed to measuring probability.<p>
 
-<p><br>The team also generated calibration curves (a.k.a., reliability diagrams) from the test data for each model, which compare the relative frequency of what was observed to the predicted probability frequency. 
-    While the best models are closest to the diagonal line representing a perfectly calibrated model (each probability predicted by the model is exactly correct), since no model is perfect, we preferred models 
-    whose bias overestimated risk (the safe zone) rather than underestimated risk (the danger zone).  The diagram below depicts model performance on these calibration curves. </p></br> 
+<p><br>The team also generated calibration curves (a.k.a., reliability diagrams) from the test data for each model, which compare the relative frequency of what was observed to the predicted probability frequency.
+  While the best models are closest to the diagonal line, which represents a perfectly calibrated model (each probability predicted by the model is exactly correct), since no model is perfect, we preferred models
+  whose bias overestimated risk (the safe zone) rather than underestimated risk (the danger zone).  The diagram below depicts model performance on these calibration curves.</p></br>
+
 <img src="img/calibration_curves.png" alt="" class="img-fluid">
-</br>
+<br><br>
 
-<p>In all the top performing models (those closest to the diagonal line), even at their worst performance, the predicted probabilities are only roughly seven percentage points away from the actual probabilities, 
-a good practical validation of model performance.<\br></p>
+<p>In all the top performing models (those closest to the diagonal line), even at their worst performance, the predicted probabilities are only roughly seven percentage points away from the actual probabilities,
+a good practical validation of model performance.</p><br>
 
 
 <h4> Final Model </h4>
-<p>The final model chosen for the OMR Tool is a calibrated XGBoost model. While the calibrated logistic regression model had a slightly lower Brier Loss Score, the team ultimately chose the calibrated XGBoost model because it incorporates feature interaction, 
-    making the personalized feature importance output (Shapley values, see below) far more aligned with existing literature.  An example of the distribution of feature importance of the calibrated Logistic Regression model vs. the calibrated XGBoost model is shown here.</b></p>
-<img src="img/model_compare.png" alt="" class="img-fluid"></br>
+<p>The final model chosen for the OMR Tool is a calibrated XGBoost model. While the calibrated logistic regression model had a slightly lower Brier Loss Score, the team ultimately chose the calibrated XGBoost model
+  because it incorporates feature interaction, making the personalized feature importance output (see Shapley Value section below) far more aligned with existing literature. An example of the distribution of feature
+  importance of the calibrated Logistic Regression model vs. the calibrated XGBoost model is shown below.</b></p><br>
+<img src="img/model_compare_2.png" alt="" class="img-fluid"><br><br>
 
 <h4> Shapley Values </h4>
-<p>It is important for a doctor to know why each patient receives their particular risk score. While this task is a straightforward output for a simple uncalibrated logistic regression model, as model complexity increases, human understanding of the model typically decreases. 
-    To add clarity for our users and to help doctors understand how risk works for each of their patients individually, the OMR Tool provides a visual output of each user’s top five features (i.e., the patient’s answers to each question) that contributed most to their total risk score, 
-    displayed as a two-sided bar graph. A Shapley value tells us how much each feature contributes to the overall risk score. Mathematically, a Shapley value is the average marginal contribution of a feature value across all possible combinations of features from our model. 
-    For one patient, their previous non-opioid substance abuse may have been the primary feature that brought their risk score up, but for another patient, even if they also have the same history of non-opioid substance abuse, it could be the simple fact of, for example, 
-    being young and male that contributed most to their individual risk. Each patient is different, and the tool assesses each individual’s information holistically, rather than statically question by question as previous risk assessment tools have.</p>
+<p>It is important for a physician to know why each patient receives their particular risk score. While this task is a straightforward output for a simple uncalibrated logistic regression model, as model complexity increases,
+  human understanding of the model typically decreases. To add clarity for our users and to help physicians understand the risk for each of their patients individually, the OMR-Tool provides a visual output of each user’s top
+  five features (i.e., the patient’s answers to each question) that contributed most to their total risk score; this is displayed as a two-sided bar graph. A Shapley value tells us how much each feature contributes to the overall
+  risk score. Mathematically, a Shapley value is the average marginal contribution of a feature value across all possible combinations of features from our model. For one patient, their previous non-opioid substance abuse may have
+  been the primary feature that brought their risk score up, but for another patient, even if they also have the same history of non-opioid substance abuse, it could be the simple fact of, for example, being young and male that
+  contributed most to their individual risk. Each patient is different, and the tool assesses each individual’s information holistically, rather than statically question by question as previous risk assessment tools have.
+</p>
 
-<p><br>It is important to note, however, that this tool does not claim experimental causality between the features and opioid misuse; rather, it is claiming predictive association between the features and opioid misuse.  
-    For example, it would be technically incorrect to say that being young and male causes a patient’s risk score to go up, but it is acceptable to say that being young and male is predictive of and/or contributes to a patient’s high risk score.  
-    While achieving causal proof of the relationship between features and opioid misuse might be nice, the experiment required to achieve this claim is infeasible for many reasons.  Moreover, there is a long precedent in the medical world to use predictive association,
-    as illustrated when a doctor asks if a patient has a family history of some condition. While family history can be predictive of a condition, it doesn’t mean that it’s been causally proven to drive that same condition, 
-    yet doctors frequently use it as an indicator of patient risk for that condition.</p>
+<p><br>It is important to note, however, that this tool does not claim experimental causality between the features and opioid misuse; rather, it is claiming predictive association between the features and opioid misuse.
+  For example, it would be technically incorrect to say that being young and male causes a patient’s risk score to go up, but it is acceptable to say that being young and male is predictive of and/or contributes to a patient’s high risk score.
+  While achieving causal proof of the relationship between features and opioid misuse might be nice, the experiment required to achieve this claim is infeasible for many reasons.  Moreover, there is a long precedent in the medical world
+  to use predictive association, as illustrated when a physician asks if a patient has a family history of some condition. While family history can be predictive of a condition, it doesn’t mean that it’s been causally proven to drive that
+  same condition, yet physicians frequently use it as an indicator of patient risk for that condition.</p>
+  </div>
+</section>
 
-    </div>
-    </section>
-  
  <!-- Production Pipeline -->
 <section class="sample-text-area border-top">
     <div class="container box_1170">
       <h3 class="text-heading">Production Pipeline</h3>
       <p class="sample-text">
+        Our OMR Assessment is delivered via a multi-step webform that we developed using Django, a python web-framework. Upon submission, our solution pre-processes the webform responses and feeds them into our trained, calibrated XGBoost model and evaluation scripts.
+            Our scripts output three important pieces of information: the likelihood of the patient to misuse opioids, the corresponding percentile for that likelihood within the general population, and
+            personalized feature importance through use of Shapley values. These three data objects are inputs for our patient risk report and data visualizations. Fusion Charts, a JavaScript charting library, are used
+            for building the data visualizations. Lastly, Bootstrap components are used to render the charts and corresponding data tables on the OMR Report, which a physician can reference when meeting with the patient.</p><br>
 <img src="img/production_pipeline.png" alt="" class="img-fluid">
-</br>
-<p><br>Our multi-step webform was developed using Django, a python web-framework. We pre-process the webform responses and feed them into our trained calibrated XGBoost model and evaluation scripts. 
-    Our scripts output three important pieces of information: the likelihood of the patient to misuse opioids, the corresponding percentile for that likelihood within the general population, and personalized feature importance through use of Shapley values. 
-    These three data objects are inputs for our report and data visualizations. Fusion Charts, a JavaScript charting library, are used for this task. Lastly, Bootstrap components render these charts in Django on a Patient Risk Report that a physician can reference when meeting with the patient.</p>
+<br>
+
 
 
 
