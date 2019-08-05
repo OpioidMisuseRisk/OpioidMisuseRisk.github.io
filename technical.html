@@ -87,44 +87,91 @@
     </section>
     <!-- breadcrumb start-->
 
-    <!-- about us part start-->
-    <section class="about_us single_about_padding">
-        <div class="container">
-            <div class="row justify-content-between align-items-center">
-                <div class="col-md-6 col-lg-6">
-                    <div class="about_us_img">
-                        <img src="img/top_service.png" alt="">
-                    </div>
-                </div>
-                <div class="col-md-6 col-lg-5">
-                    <div class="about_us_text">
-                        <h2>The Data</h2>
-                        <p>Our tool was trained on data gathered by The National Survey on Drug Use and Health (NSDUH) during the years 2015-2017.
-                            NSDUH is a nationwide study providing information on tobacco, alcohol, drug-use, mental health, and other health-related issues
-                            in the general population of the US. The study collects data via individual interview from approximately 70,000 teens and adults
-                            each year and the results are used to inform various public health programs, policies, and tools like our risk assessment app.
-                            For more information on the survey, please visit their website: https://nsduhweb.rti.org/</p>
-                        <a class="btn_2 " href="https://nsduhweb.rti.org/">NSDUH Website</a>
-                        <div class="banner_item">
-                            <div class="single_item">
-                                <img src="img/icon/banner_1.svg" alt="">
-                                <h5>Emergency</h5>
-                            </div>
-                            <div class="single_item">
-                                <img src="img/icon/banner_2.svg" alt="">
-                                <h5>Appointment</h5>
-                            </div>
-                            <div class="single_item">
-                                <img src="img/icon/banner_3.svg" alt="">
-                                <h5>Qualfied</h5>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+    <!--Data -->
+    <div class="whole-wrap">
+      <div class="container box_1170">
+        <div class="section-top-border">
+          <h3 class="mb-30">The Data</h3>
+          <div class="row">
+            <div class="col-md-9">
+              <p>Our tool was trained on data gathered by The National Survey on Drug Use and Health (NSDUH) during the years 2015-2017.
+                NSDUH is a nationwide study providing information on tobacco, alcohol, drug-use, mental health, and other health-related issues
+                in the general population of the United States. The study collects data via individual interviews with approximately 70,000 teens
+                and adults each year and the results are used to inform various public health programs, policies, and tools; such as our OMR-Tool.
+                For more information on the survey, please visit their website:</p>
+                  <p><br><a class="btn_2 " href="https://nsduhweb.rti.org/" target = "_blank">NSDUH Website</a></p>
+
+              <p><br>Although NSDUH data set dates back to 1971, using only recent data was a key design consideration, because the opioid crisis has grown and changed
+                rapidly in recent years, and it is important for the model to make its predictions based on the current state of the opioid crisis. Additionally, the survey
+                underwent a large number of changes starting in 2015, making earlier data difficult to integrate. For example, the Diagnostic and Statistical Manual of
+                Mental Disorders (DSM-V) standards were incorporated into the survey in 2015, changing the diagnostic criteria for many of the included drug and mental health disorders.
+                The raw data set contained approximately 170,000 rows, with each row corresponding to a different survey respondent (individual respondents are not allowed to take the
+                survey more than once, in the same year or across multiple years). After removing participants who had not used prescription painkillers in the past year, the dataset contained
+                approximately <b>53,000 respondents</b>.</p>
             </div>
+            <div class="col-md-3">
+              <img src="img/nsduh.png" alt="" class="img-fluid">
+            </div>
+          </div>
         </div>
-    </section>
-    <!-- about us part end-->
+      </div>
+    </div>
+
+  <!-- Feature Selection and pre-processing -->
+
+  <section class="sample-text-area border-top">
+    <div class="container box_1170">
+      <h3 class="text-heading">Feature Selection and Pre-Processing</h3>
+      <p class="sample-text">
+The data set contains 2,631 features, each of which corresponds to either a question directly asked on the NSDUH survey,
+or a recoded variable created from aggregating multiple questions. The outcome variable for this tool is “Opioid Misuse”,
+which is defined as people who answered Yes to the question: <b>“Have you ever, even once, used any prescription pain reliever
+in any way a doctor did not direct you to use it in the past 12 months?”</b>  This question is further defined to include using
+prescription pain relievers <b>“without a prescription of your own”</b>, <b>“in greater amounts, more often, or longer than you were told
+to take it”</b>, or <b>“in any other way a doctor did not direct you to use it."</b></p>
+
+<p><br>Each survey respondent was categorized as having misused or not misused opioids in the past 12 months (from survey date).
+For variables that had only categorical responses, we one-hot-encoded them before adding to our model. For variables with a
+mix of categorical and continuous responses (e.g., “At what age did you first smoke cigarettes” with a response option for “never smoked”), the
+continuous responses were first binned, and then one-hot-encoded along with the categorical responses.</p></br>
+<h4> Feature Reduction</h4>
+<p>One key challenge was to narrow the feature space down from 2,631 variables in the survey down to roughly 25 variables/questions,
+which a patient could practically provide responses for on a form in a physician’s office.  Several strategies for choosing or excluding
+features helped achieve this goal:</p>
+
+<p><br><ol class="ordered-list">
+  <li><span>Excluding features that were effectively asking the same question as the outcome variable.</span></li>
+  <li><span>Excluding features that were very similar to other features in the same topic.</span></li>
+  <li><span>Excluding features that only inquired about patient behaviors / activities in the past 30 days, as including
+  these would have likely introduced significant look-ahead bias; since the outcome variable measured opioid misuse in the prior 12 months.</span></li>
+  <li><span>Choosing feature categories based on what existing research has shown are the most likely contributors to opioid misuse:  patient age, tobacco
+  use, other substance abuse (hard drugs), mental health, etc.</span></li>
+  <li><span>Choosing features with high differences of misuse prevalence across their response options. Since N-size can be so impactful to this type of calculation, computing the weighted standard deviation of misuse
+  prevalence across response options for each question provided an automated and robust way to quickly evaluate each feature.</span></li>
+  <li><span>Excluding features from existing research that did not have a strong difference in their prevalence of opioid misuse across response options.</span></li>
+  <li><span>Excluding features with perfect or near-perfect correlation with other features, as this multicollinearity could be harmful to both model performance and feature importance accuracy.</span></li>
+
+</ol></p><br>
+
+<h4>Potential Look-Ahead Bias</h4>
+<p>Because our outcome variable and certain misuse features for other drugs were specifically about the previous 12 months, the team had to consider the possibility of look-ahead bias; that is,
+  for individuals who misused both opioids and another substance in the previous 12 months, which of the misuses came first? Perhaps misusing opioids caused individuals to misuse other substances,
+  which would mean misuse of the other drug would be an outcome rather than a feature; this would lead to over-predicting risk for individuals who have used these other substances. However, it could
+  also be the other way around, where other substance misuse came first and therefore is a legitimate predictor of opioid misuse; or it could be the underlying predictor of a propensity to misuse opioids
+  (e.g., a patient with an “addictive personality”), regardless of which one came first.  </p></br>
+
+  <p>To deal with this potential bias, when possible, the team selected features that encompassed wider time-frames than the 12 month misuse window. This tactic was not always possible, but the direction
+    of the look-ahead bias erred on the side of over-predicting risk, which was the more conservative and therefore more tolerable direction of bias. This was one of the main reasons why the team was okay
+    allowing a few features with this potential bias.  If this project advances to the clinical trials stage, the team will prioritize eliminating look-ahead bias in a designed experiment.</p></br>
+
+    <p>In conclusion, while there is potentially look-ahead bias, it is by no means definitive, nor is it a detractor of this project’s effectiveness. Given the few features impacted and conservative direction
+       of the potential bias, along with the opportunity to eliminate it in future stages, the team accepted this risk but also felt it was important to acknowledge.</p></br>
+
+    </div>
+  </section>
+
+
+
 
 
 
